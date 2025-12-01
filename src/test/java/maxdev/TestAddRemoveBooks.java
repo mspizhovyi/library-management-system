@@ -1,73 +1,92 @@
 package maxdev;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-
-import org.junit.jupiter.api.BeforeEach;
+import maxdev.factory.AudioBookFactory;
+import maxdev.factory.EBookFactory;
+import maxdev.factory.PaperBookFactory;
+import maxdev.model.Book;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-class TestAddRemoveBooks {
-	
-	private Library library;
-	
-	@BeforeEach
-	void setUp() throws Exception {
-		 this.library = new Library(); // empty library for each test
+public class TestAddRemoveBooks {
+
+	@Test
+	void testAddPaperBooks() {
+		Library library = new Library();
+		library.addBook(new PaperBookFactory().createBook("Clean Code"));
+		library.addBook(new PaperBookFactory().createBook("Clean Architecture"));
+		library.addBook(new PaperBookFactory().createBook("Design Patterns"));
+		library.addBook(new PaperBookFactory().createBook("Agile Development"));
+
+		assertEquals(4, library.booksCount());
 	}
 
-	PaperBook book1 = new PaperBook("Dune");
-	PaperBook book2 = new PaperBook("1984");
-	PaperBook book3 = new PaperBook("Moby Dick");
-	
-	Member member = new Member("Grady Booch");
-	
 	@Test
-	void AddBooks() {
-		
-		assertEquals(library.booksCount(), 0, "Should be no books in library");	
-		library.addBook(book1);
-		library.addBook(book2);
-		library.addBook(book3);
-		assertEquals(library.booksCount(), 3, "There should be 3 books in the library");
+	void testAddEBooks() {
+		Library library = new Library();
+		library.addBook(new EBookFactory().createBook("Clean Code"));
+		library.addBook(new EBookFactory().createBook("Clean Architecture"));
+		library.addBook(new EBookFactory().createBook("Design Patterns"));
+		library.addBook(new EBookFactory().createBook("Agile Development"));
+
+		assertEquals(4, library.booksCount());
 	}
-	
+
 	@Test
-	void RemoveBooksBook() {
-		
-		AddBooks();
-		assertEquals(library.booksCount(), 3, "There should be 3 books in the library");
-		library.removeBook(book2);
-		library.removeBook(book3);
-		assertEquals(library.booksCount(), 1, "There should be only one book left in the library");
+	void testAddAudioBooks() {
+		Library library = new Library();
+		library.addBook(new AudioBookFactory().createBook("Clean Code"));
+		library.addBook(new AudioBookFactory().createBook("Clean Architecture"));
+		library.addBook(new AudioBookFactory().createBook("Design Patterns"));
+		library.addBook(new AudioBookFactory().createBook("Agile Development"));
+
+		assertEquals(4, library.booksCount());
 	}
-	
+
 	@Test
-	void RemoveBooksString() {
-		
-		AddBooks();
-		assertEquals(library.booksCount(), 3, "There should be 3 books in the library");
-		library.removeBook("Dune");
-		assertEquals(library.booksCount(), 2, "There should be only two book left in the library");
+	void testRemovePaperBook() {
+		Library library = new Library();
+		Book book = new PaperBookFactory().createBook("Clean Code");
+		library.addBook(book);
+		library.removeBook("Clean Code");
+
+		assertEquals(0, library.booksCount());
 	}
-	
+
 	@Test
-	void RemoveBorrowedBook() {
-		
-		AddBooks();
-		assertEquals(library.booksCount(), 3, "There should be 3 books in the library");
-		
-		member.borrowBook(book1);
-		assertEquals(member.borrowedBooksCount(), 1, "Should be 1 borrowed book");
-		
-		library.removeBook(book1);
-		assertEquals(library.booksCount(), 2, "There should be only two book left in the library");
-		
-		assertEquals(member.borrowedBooksCount(), 1, "The book should stay with member"); // 
-		
-		PaperBook b = member.getBorrowedBooks().get(0); // the only book
-		assertEquals(b, book1,"The owned book should be the removed book");
+	void testRemoveEBook() {
+		Library library = new Library();
+		Book book = new EBookFactory().createBook("Clean Architecture");
+		library.addBook(book);
+		library.removeBook("Clean Architecture");
+
+		assertEquals(0, library.booksCount());
 	}
-	
-	
+
+	@Test
+	void testRemoveAudioBook() {
+		Library library = new Library();
+		Book book = new AudioBookFactory().createBook("Design Patterns");
+		library.addBook(book);
+		library.removeBook("Design Patterns");
+
+		assertEquals(0, library.booksCount());
+	}
+
+	@Test
+	void testFindBookByTitle() {
+		Library library = new Library();
+		library.addBook(new PaperBookFactory().createBook("Agile Development"));
+
+		assertTrue(library.findBookByTitle("Agile Development").isPresent());
+	}
+
+	@Test
+	void testRemoveNonExistingBook() {
+		Library library = new Library();
+		library.addBook(new PaperBookFactory().createBook("Clean Code"));
+		library.removeBook("Not A Book");
+
+		assertEquals(1, library.booksCount());
+	}
 }

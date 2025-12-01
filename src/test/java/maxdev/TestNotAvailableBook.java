@@ -1,56 +1,89 @@
 package maxdev;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
+import maxdev.factory.AudioBookFactory;
+import maxdev.factory.EBookFactory;
+import maxdev.factory.PaperBookFactory;
+import maxdev.model.Book;
+import maxdev.model.Member;
+import maxdev.service.BorrowingBookResult;
+import maxdev.service.BorrowingServiceImpl;
 import org.junit.jupiter.api.Test;
 
-class TestNotAvailableBook {
+import static org.junit.jupiter.api.Assertions.*;
 
-	Member member1;
-	Member member2;
-	
-	PaperBook book1 = new PaperBook("Dune");
-	PaperBook book2 = new PaperBook("1984");
-	
-	@BeforeEach
-	void setUp() throws Exception {
-		member1 = new Member("Alice"); // flush borrowedBook array 
-		member2 = new Member("Bob");   // flush borrowedBook array 
-		book1.setIsAvailable(true);
-		book2.setIsAvailable(true);
-	}
+public class TestNotAvailableBook {
+
 	@Test
-	void tryToBorrowBookBook() {
-		
-		// first member borrows a book
-		
-		assertEquals(member1.borrowedBooksCount(), 0, "Borrowed books should be zero");
-		assertEquals(member2.borrowedBooksCount(), 0, "Borrowed books should be zero");
-		
-		assertTrue(book1.getIsAvailable(), "Book should be available");
-		member1.borrowBook(book1);
-		assertFalse(book1.getIsAvailable(), "Book should be borrowed");
-		assertEquals(member1.borrowedBooksCount(), 1, "Count of borrowed books must be 1");
-		
-		// second member borrows the same book 
-		member2.borrowBook(book1);
-		assertFalse(book1.getIsAvailable(), "Book should still be borrowed" );
-		assertEquals(member1.borrowedBooksCount(), 1, "Member should have one book");
-		assertEquals(member2.borrowedBooksCount(), 0, "Member should have no books after rejection");
-		
-		// first member returns the book 
-		member1.returnBook(book1);
-		assertTrue(book1.getIsAvailable(), "Book should be available after return");
-		
-		// second member borrows the same book 
-		member2.borrowBook(book1);
-		
-		assertFalse(book1.getIsAvailable(), "Book should be borrowed");
-		assertEquals(member1.borrowedBooksCount(), 0, "Member should have no borrowed books");
-		assertEquals(member2.borrowedBooksCount(), 1, "Member should have one book");
-		
-			
+	void testPaperBookUnavailableThenAvailable() {
+		Member a = new Member("Alice", BorrowingServiceImpl.getInstance());
+		Member b = new Member("Bob", BorrowingServiceImpl.getInstance());
+
+		Book book = new PaperBookFactory().createBook("Clean Code");
+
+		a.borrowBook(book);
+		BorrowingBookResult r1 = b.borrowBook(book);
+		assertFalse(r1.isSuccess());
+
+		a.returnBook(book);
+		BorrowingBookResult r2 = b.borrowBook(book);
+		assertTrue(r2.isSuccess());
 	}
 
+	@Test
+	void testEBookUnavailableThenAvailable() {
+		Member a = new Member("Alice", BorrowingServiceImpl.getInstance());
+		Member b = new Member("Bob", BorrowingServiceImpl.getInstance());
+
+		Book book = new EBookFactory().createBook("Clean Architecture");
+
+		a.borrowBook(book);
+		BorrowingBookResult r1 = b.borrowBook(book);
+		assertFalse(r1.isSuccess());
+
+		a.returnBook(book);
+		BorrowingBookResult r2 = b.borrowBook(book);
+		assertTrue(r2.isSuccess());
+	}
+
+	@Test
+	void testAudioBookUnavailableThenAvailable() {
+		Member a = new Member("Alice", BorrowingServiceImpl.getInstance());
+		Member b = new Member("Bob", BorrowingServiceImpl.getInstance());
+
+		Book book = new AudioBookFactory().createBook("Design Patterns");
+
+		a.borrowBook(book);
+		BorrowingBookResult r1 = b.borrowBook(book);
+		assertFalse(r1.isSuccess());
+
+		a.returnBook(book);
+		BorrowingBookResult r2 = b.borrowBook(book);
+		assertTrue(r2.isSuccess());
+	}
+
+	@Test
+	void testMultipleUnavailableBooksDifferentTypes() {
+		Member a = new Member("Alice", BorrowingServiceImpl.getInstance());
+		Member b = new Member("Bob", BorrowingServiceImpl.getInstance());
+
+		Book p = new PaperBookFactory().createBook("Clean Code");
+		Book e = new EBookFactory().createBook("Clean Architecture");
+		Book aud = new AudioBookFactory().createBook("Agile Development");
+
+		a.borrowBook(p);
+		a.borrowBook(e);
+		a.borrowBook(aud);
+
+		assertFalse(b.borrowBook(p).isSuccess());
+		assertFalse(b.borrowBook(e).isSuccess());
+		assertFalse(b.borrowBook(aud).isSuccess());
+
+		a.returnBook(p);
+		a.returnBook(e);
+		a.returnBook(aud);
+
+		assertTrue(b.borrowBook(p).isSuccess());
+		assertTrue(b.borrowBook(e).isSuccess());
+		assertTrue(b.borrowBook(aud).isSuccess());
+	}
 }

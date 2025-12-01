@@ -1,57 +1,55 @@
 package maxdev;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
+import maxdev.factory.AudioBookFactory;
+import maxdev.factory.EBookFactory;
+import maxdev.factory.PaperBookFactory;
+import maxdev.model.Book;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-class TestFindClassString {
-
-	
-private Library library;
-	
-	@BeforeEach
-	void setUp() throws Exception {
-		 this.library = new Library(); // empty library for each test
-	}
-	
-	Member member1 = new Member("Dude");
-	Member member2 = new Member("Gal");
-	Book book1 = new PaperBook("Dune");
-	Book book2 = new PaperBook("1984");
+public class TestFindClassString {
 
 	@Test
-	void FindMember() {
-		library.addMember(member1);
-		library.addMember(member2);
-		Member member = library.findMemberByName(member1.getName());
-		assertEquals(member, member1, "Found member doesn't match");
-		assertEquals(library.membersCount(), 2, "There should be two members");
-		library.removeMember(member2);
-		assertEquals(library.membersCount(), 1, "There should be only one member remain");
-		member = library.findMemberByName(member2.getName());
-		assertNull(member, "The mmber should not hav ben found after removal from the library");
-		library.removeMember(member2);
-		assertEquals(library.membersCount(),  1, "Removal of a non-existent member should not affect library");
-		library.removeMember(member1);
-		assertEquals(library.membersCount(), 0, "All members should have been removed");
+	void testPaperBookToStringContainsTitle() {
+		Book book = new PaperBookFactory().createBook("Clean Code");
+		assertTrue(book.toString().contains("Clean Code"));
 	}
 
 	@Test
-	void FindBook() {
-		library.addBook(book1);
-		library.addBook(book2);
-		Book book = library.findBookByTitle(book1.getTitle());
-		assert(book == book1);
-		assert(library.booksCount() == 2);
-		library.removeBook(book2);
-		assert(library.booksCount() == 1);
-		book = library.findBookByTitle(book2.getTitle());
-		assert(book == null);
-		library.removeBook(book2);
-		assert(library.booksCount() == 1);
-		library.removeBook(book1);
-		assert(library.booksCount() == 0);
+	void testPaperBookToStringHasType() {
+		Book book = new PaperBookFactory().createBook("Clean Code");
+		assertTrue(book.toString().contains("PaperBook"));
+	}
+
+	@Test
+	void testEBookToStringContainsTitle() {
+		Book book = new EBookFactory().createBook("Clean Architecture");
+		assertTrue(book.toString().contains("Clean Architecture"));
+	}
+
+	@Test
+	void testEBookToStringHasType() {
+		Book book = new EBookFactory().createBook("Clean Architecture");
+		assertTrue(book.toString().contains("EBook"));
+	}
+
+	@Test
+	void testAudioBookToStringContainsTitle() {
+		Book book = new AudioBookFactory().createBook("Design Patterns");
+		assertTrue(book.toString().contains("Design Patterns"));
+	}
+
+	@Test
+	void testAudioBookToStringHasType() {
+		Book book = new AudioBookFactory().createBook("Design Patterns");
+		assertTrue(book.toString().contains("AudioBook"));
+	}
+
+	@Test
+	void testAnotherPaperBook() {
+		Book book = new PaperBookFactory().createBook("Agile Development");
+		assertTrue(book.toString().contains("Agile Development"));
+		assertTrue(book.toString().contains("PaperBook"));
 	}
 }

@@ -1,72 +1,53 @@
 package maxdev;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import maxdev.model.Book;
+import maxdev.model.Member;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class Library {
-	 
-	private ArrayList<Book> catalog = new ArrayList<>(); // Book dependency
-	private ArrayList<Member> members = new ArrayList<>(); // Member dependency
-	
-	public Member findMemberByName(String name) {
-		 for (Member member : members) {
-	           if (member.getName().equals(name)) {
-	               return member; // Return the found member
-	           }
-	       }
-	       return null; // Return null if not found
-	}
-	public Book findBookByTitle (String title) {
-		 for (Book book : catalog) {
-	           if (book.getTitle().equals(title)) {
-	               return book; // Return the found book
-	           }
-	       }
-	       return null; // Return null if not found
-	}
-	public void addMember(Member member) {
-		members.add(member);
-	}
-	public void addBook(Book book) {
-		catalog.add(book);
-	}
+	private final List<Member> members = new ArrayList<>();
+	private final List<Book> books = new ArrayList<>();
+
+	public void addMember(Member member) { members.add(member); }
+
 	public void removeMember(String name) {
-		Member member = findMemberByName(name);
-		removeMember(member);
+		findMemberByName(name).ifPresent(m -> {
+			m.getBorrowedBooks().forEach(b -> b.setIsAvailable(true));
+			m.getBorrowedBooks().clear();
+			members.remove(m);
+		});
 	}
-	public void removeMember(Member member) {
-		if(member != null) {
-			member.returnAllBooks(); // return all member's books to the library
-			members.remove(member);
-		}
+
+	public void addBook(Book book) {
+		books.add(book);
 	}
+
 	public void removeBook(String title) {
-		Book book = findBookByTitle(title);
-		removeBook(book);
+		findBookByTitle(title).ifPresent(books::remove);
 	}
-	public void removeBook(Book book) {
-		if (book != null)
-			catalog.remove(book); // book stays with the member who has it
+
+	public Optional<Member> findMemberByName(String name) {
+		return members
+				.stream()
+				.filter(m -> m.getName().equalsIgnoreCase(name))
+				.findFirst();
 	}
-	public void showMembers() {
-		Iterator<Member> memberIterator = members.iterator();
-	    while(memberIterator.hasNext()) {
-		   	 Member member = memberIterator.next();
-		   	 System.out.println(member);
-	    }
+
+	public Optional<Book> findBookByTitle(String title) {
+		return books
+				.stream()
+				.filter(b -> b.getTitle().equalsIgnoreCase(title))
+				.findFirst();
 	}
-	public void showBooks() {
-		Iterator<Book> bookIterator = catalog.iterator();
-	    while(bookIterator.hasNext()) {
-		   	 Book book = bookIterator.next();
-		   	 System.out.println(book); // book.toString()
-	    }
-	}
-	public int booksCount() {
-		return catalog.size();
-	}
+
 	public int membersCount() {
 		return members.size();
+	}
+
+	public int booksCount() {
+		return books.size();
 	}
 }

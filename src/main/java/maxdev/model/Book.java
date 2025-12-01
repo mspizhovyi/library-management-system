@@ -1,4 +1,4 @@
-package maxdev;
+package maxdev.model;
 
 public interface Book {
     String toString();
