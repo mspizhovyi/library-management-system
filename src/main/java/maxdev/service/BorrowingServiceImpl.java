@@ -4,14 +4,18 @@ import maxdev.model.Book;
 import maxdev.model.Member;
 
 public class BorrowingServiceImpl implements BorrowingService {
-    private static BorrowingServiceImpl instance;
+    private static volatile BorrowingServiceImpl instance;
     private final int BORROWING_LIMIT = 3;
 
     private BorrowingServiceImpl() {}
 
-    public static synchronized BorrowingServiceImpl getInstance() {
+    public static BorrowingServiceImpl getInstance() {
         if (instance == null) {
-            instance = new BorrowingServiceImpl();
+            synchronized (BorrowingServiceImpl.class) {
+                if(instance == null) {
+                    instance = new BorrowingServiceImpl();
+                }
+            }
         }
         return instance;
     }
