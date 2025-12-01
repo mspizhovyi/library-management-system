@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Member {
-
 	private final String name;
 	private final List<Book> borrowedBooks = new ArrayList<>();
 	private final BorrowingService borrowingService;

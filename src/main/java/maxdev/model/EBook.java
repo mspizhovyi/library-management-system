@@ -1,7 +1,6 @@
 package maxdev.model;
 
 public class EBook implements Book {
-
     private final String title;
     private boolean isAvailable = true;
 

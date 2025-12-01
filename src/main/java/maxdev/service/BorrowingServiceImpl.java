@@ -4,10 +4,8 @@ import maxdev.model.Book;
 import maxdev.model.Member;
 
 public class BorrowingServiceImpl implements BorrowingService {
-
     private static BorrowingServiceImpl instance;
-
-    private final int borrowingLimit = 3;
+    private final int BORROWING_LIMIT = 3;
 
     private BorrowingServiceImpl() {}
 
@@ -29,7 +27,7 @@ public class BorrowingServiceImpl implements BorrowingService {
             return new BorrowingBookResult(false, "Member already borrowed this book.");
         }
 
-        if (member.borrowedBooksCount() >= borrowingLimit) {
+        if (member.borrowedBooksCount() >= BORROWING_LIMIT) {
             return new BorrowingBookResult(false, "Borrowing limit exceeded (max = 3).");
         }
 
