@@ -4,20 +4,19 @@ import maxdev.model.Book;
 import maxdev.model.Member;
 
 public class BorrowingServiceImpl implements BorrowingService {
-    private static volatile BorrowingServiceImpl instance;
-    private final int BORROWING_LIMIT = 3;
+    private static volatile BorrowingServiceImpl INSTANCE;
 
     private BorrowingServiceImpl() {}
 
     public static BorrowingServiceImpl getInstance() {
-        if (instance == null) {
+        if (INSTANCE == null) {
             synchronized (BorrowingServiceImpl.class) {
-                if(instance == null) {
-                    instance = new BorrowingServiceImpl();
+                if(INSTANCE == null) {
+                    INSTANCE = new BorrowingServiceImpl();
                 }
             }
         }
-        return instance;
+        return INSTANCE;
     }
 
     @Override
@@ -31,8 +30,9 @@ public class BorrowingServiceImpl implements BorrowingService {
             return new BorrowingBookResult(false, "Member already borrowed this book.");
         }
 
-        if (member.borrowedBooksCount() >= BORROWING_LIMIT) {
-            return new BorrowingBookResult(false, "Borrowing limit exceeded (max = 3).");
+        int borrowingLimit = 3;
+        if (member.borrowedBooksCount() >= borrowingLimit) {
+            return new BorrowingBookResult(false, String.format("Borrowing limit exceeded (max = %d).", 3));
         }
 
         book.setIsAvailable(false);
