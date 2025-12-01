@@ -28,14 +28,6 @@ public class TestController {
 		assertTrue(true);
 	}
 
-	@Test
-	void testAddBookUsingFactoryMethod() {
-		LibrarianController c = new LibrarianController();
-		c.addBook(new PaperBookFactory(), "Agile Development");
-		c.addBook(new EBookFactory(), "Clean Code");
-		c.addBook(new AudioBookFactory(), "Design Patterns");
-		assertTrue(true);
-	}
 
 	@Test
 	void testBorrowAndReturnPaperBook() {

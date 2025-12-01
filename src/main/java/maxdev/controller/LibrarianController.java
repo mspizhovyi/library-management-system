@@ -33,10 +33,6 @@ public class LibrarianController {
 		library.addBook(audioFactory.createBook(title));
 	}
 
-	public void addBook(BookFactory factory, String title) {
-		library.addBook(factory.createBook(title));
-	}
-
 	public void borrowBookByMember(String title, String name) {
 		Optional<Member> member = library.findMemberByName(name);
 		Optional<Book> book = library.findBookByTitle(title);
